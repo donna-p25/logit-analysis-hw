@@ -1,0 +1,121 @@
+---
+title: "Assignment 4"
+author: "Donna Parker"
+date: "2025-03-11"
+output: html_document
+---
+
+## Some of the things that can go wrong with interaction terms with  logit models are that unlike linear regression,logit models are nonlinear. This means that  the effect of an interaction term isn’t simply the product of individual coefficients. This makes it possible for misinterpretation if you directly look at the coefficient of the interaction term without considering marginal effects. Additionally,standard errors and significance tests might be misleading if  the results aren’t properly interpreted. However, using a simulation-based approach can help by allowing us to compute and visualize marginal effects and predicted probabilities,which makes interpretation more intuitive, rather than just looking at raw coefficients. It can also improve accuracy of conclusions drawn by the model by accounting for  nonlinearities and uncertainty, as well as generating confidence intervals around predictions; which reduces the  risk of misleading interpretations.
+
+
+```{r}
+rm = (list = ls())
+gc()
+
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+library(broom)
+
+
+```
+
+```{r}
+data(mtcars)
+
+```
+
+```{r}
+
+# Convert the outcome variable (am: automatic vs manual) into a factor
+mtcars$am <- as.factor(mtcars$am)
+
+```
+
+```{r}
+# Fit a simple logit model with one predictor
+model1 <- glm(am ~ mpg, data = mtcars, family = binomial)
+
+```
+
+```{r}
+# Fit a moderate complexity model with additional predictors
+model2 <- glm(am ~ mpg + hp + wt, data = mtcars, family = binomial)
+
+```
+
+
+```{r}
+
+# Fit a complex model with an interaction term
+model3 <- glm(am ~ mpg * hp + wt, data = mtcars, family = binomial)
+
+```
+```{r}
+
+# Compare models using AIC and BIC
+aic_values <- AIC(model1, model2, model3)
+bic_values <- BIC(model1, model2, model3)
+
+```
+
+```{r}
+
+# Check if models exist
+print(model1)
+print(model2)
+print(model3)
+
+```
+
+```{r}
+
+# Print AIC and BIC values
+
+print(aic_values)
+print(bic_values)
+
+
+```
+
+```{r}
+
+# Likelihood Ratio Test (Comparing nested models)
+lr_test_12 <- anova(model1, model2, test = "Chisq")
+lr_test_23 <- anova(model2, model3, test = "Chisq")
+
+```
+
+```{r}
+
+print(lr_test_12)
+print(lr_test_23)
+
+```
+
+```{r}
+
+# Summary of the best model
+summary(model3)
+
+```
+
+```{r}
+
+# Interpretation: Extracting odds ratios and confidence intervals
+exp(coef(model3))  # Odds ratios
+exp(confint(model3))  # Confidence intervals
+
+```
+
+
+
+
+
+
+
+
+
+
+
